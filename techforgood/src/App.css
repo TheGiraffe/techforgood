@@ -36,3 +36,26 @@
     transform: rotate(360deg);
   }
 }
+
+.userDetails{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1em;
+}
+
+.userDetails label{
+  display: flex;
+  gap: 1em;
+}
+
+.formWrapper{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1em;
+}
+
+.userOptions{
+  max-width: 50%;
+}
