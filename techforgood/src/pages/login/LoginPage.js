@@ -1,23 +1,24 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { login } from '../../features/auth/authSlice';
+import login from '../../features/firebase/auth/login';
+
 
 const LoginPage = () => {
-    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const dispatch = useDispatch();
+    const [errMessage, setErrMessage] = useState('');
     const navigate = useNavigate();
 
-
-    const onSubmit = (e) => {
+    const onSubmit = async (e) => {
         e.preventDefault();
-
-        dispatch(login({ username, password }))
-            .unwrap()
-            .then(() => {
-                navigate('/profile');
-            });
+        setErrMessage('')
+        const {result, error} = await login(email, password);
+        if (error){
+            setErrMessage(error.message);
+            return console.error(error);
+        }
+        console.log(result);
+        return navigate('/profile')
     };
 
     return (
@@ -25,11 +26,11 @@ const LoginPage = () => {
             <h1>Login Page</h1>
             <form onSubmit={onSubmit}>
                 <label>
-                    Username:
+                    Email:
                     <input
-                        type="text"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                     />
                 </label>
                 <label>
@@ -42,6 +43,7 @@ const LoginPage = () => {
                 </label>
                 <button type="submit">Login</button>
             </form>
+            {errMessage ? <div style={{color: "red"}}>{errMessage}</div> : <></>}
         </div>
     );
 };
