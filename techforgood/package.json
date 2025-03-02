@@ -5,6 +5,7 @@
   "dependencies": {
     "cra-template": "1.2.0",
     "firebase": "^11.3.1",
+    "formik": "^2.4.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.1.5",
