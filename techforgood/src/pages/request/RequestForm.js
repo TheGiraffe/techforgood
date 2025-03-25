@@ -1,18 +1,22 @@
 import { getFirestore, collection, addDoc } from "firebase/firestore";
 import { useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { useAuth } from "../../AuthProvider";
 
 const db = getFirestore();
 
-const RequestDetailPage = () => {
+const RequestForm = () => {
     const [requestSubmitted, setRequestSubmitted] = useState(false);
     const [error, setError] = useState(null);
+    const { user, loading } = useAuth(); // Use the context values
+
     const handleSubmit = async (values, { resetForm }) => {
         try {
             await addDoc(collection(db, "requests"), {
                 title: values.title,
                 description: values.description,
                 created: new Date().toISOString(),
+                uid: user.uid,
             });
             setRequestSubmitted(true);
             resetForm();
@@ -20,6 +24,14 @@ const RequestDetailPage = () => {
             setError(err);
         }
     };
+
+    if (loading) {
+        return <p>Loading...</p>;
+    }
+
+    if (!user) {
+        return <p>You must be logged in to make a request</p>;
+    }
 
     return (
         <div>
@@ -69,6 +81,4 @@ const RequestDetailPage = () => {
     );
 };
 
-export default RequestDetailPage;
-
-
+export default RequestForm;
