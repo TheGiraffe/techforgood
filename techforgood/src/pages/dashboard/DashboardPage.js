@@ -15,11 +15,6 @@ const Dashboard = () => {
         fetchUserData();
     }, []);
 
-    const handleLogout = () => {
-        // Add logout logic here
-        console.log('User logged out');
-    };
-
     return (
         <>
             <nav>
@@ -34,12 +29,6 @@ const Dashboard = () => {
                     onClick={() => setView('requests')}
                 >
                     Requests
-                </button>
-                <button 
-                    style={buttonStyle} 
-                    onClick={handleLogout}
-                >
-                    Logout
                 </button>
             </nav>
 

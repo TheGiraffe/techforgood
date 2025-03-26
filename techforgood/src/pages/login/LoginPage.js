@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../AuthProvider';
 import login from '../../features/firebase/auth/login';
 
 const LoginPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errMessage, setErrMessage] = useState('');
+    const { logoutMessage } = useAuth();
     const navigate = useNavigate();
 
     const onSubmit = async (e) => {
@@ -17,7 +19,7 @@ const LoginPage = () => {
             return console.error(error);
         }
         console.log(result);
-        return navigate('/profile');
+        return navigate('/dashboard');
     };
 
     return (
@@ -44,6 +46,7 @@ const LoginPage = () => {
                 <br />
                 <button type="submit">Login</button>
             </form>
+            {logoutMessage && <p style={{color: 'green'}}>{logoutMessage}</p>}
             {errMessage ? <div style={{ color: "red" }}>{errMessage}</div> : null}
         </div>
     );

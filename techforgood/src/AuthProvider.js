@@ -4,6 +4,7 @@
 
 import { createContext, useState, useEffect, useContext } from "react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
 import getData from "./features/firebase/getData";
 
 const AuthContext = createContext(); //store's the authentication state
@@ -16,26 +17,40 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState(null);
+  const [logoutMessage, setLogoutMessage] = useState('');
   const auth = getAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
       setLoading(false);
       if (currentUser) {
-        const {result, error} = getData('users', currentUser.uid);
+        const { result, error } = await getData('users', currentUser.uid);
         if (!error) {
           setProfile(result);
-      }
+        }
       } else {
-      setProfile(null);
+        setProfile(null);
       }
     });
     return () => unsubscribe();
   }, [auth]);
-  
+
+  const logout = async () => {
+    try {
+      await auth.signOut();
+      setUser(null);
+      setProfile(null);
+      setLogoutMessage('You have been successfully signed out.');
+      navigate('/login');
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, profile}}> 
+    <AuthContext.Provider value={{ user, loading, profile, logout, logoutMessage }}>
       {!loading && children}
     </AuthContext.Provider>
   );
