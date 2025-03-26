@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import ProfilePage from '../profile/ProfilePage';
+import ProfilePage from './profile/ProfilePage';
 import RequestsPage from '../request/Requests'; // Import the new component
 
 const Dashboard = () => {
