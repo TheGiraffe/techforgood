@@ -1,6 +1,6 @@
 import { getFirestore, collection, addDoc } from "firebase/firestore";
 import { useState } from "react";
-import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { useForm } from "react-hook-form";
 import { useAuth } from "../../AuthProvider";
 
 const db = getFirestore();
@@ -9,8 +9,9 @@ const RequestForm = () => {
     const [requestSubmitted, setRequestSubmitted] = useState(false);
     const [error, setError] = useState(null);
     const { user, loading } = useAuth(); // Use the context values
+    const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm();
 
-    const handleSubmit = async (values, { resetForm }) => {
+    const onSubmit = async (values) => {
         try {
             await addDoc(collection(db, "requests"), {
                 title: values.title,
@@ -19,7 +20,7 @@ const RequestForm = () => {
                 uid: user.uid,
             });
             setRequestSubmitted(true);
-            resetForm();
+            reset();
         } catch (err) {
             setError(err);
         }
@@ -38,45 +39,28 @@ const RequestForm = () => {
             <h1>Make a Request</h1>
             {requestSubmitted && <p>Request has been submitted, please refer to your dashboard to for user bids or to make changes to your request</p>}
             {error && <p style={{ color: 'red' }}>Error, request has not been submitted to server. Please try again later</p>}
-            <Formik
-                initialValues={{ title: '', description: '' }}
-                validate={(values) => {
-                    const errors = {};
-                    if (!values.title) {
-                        errors.title = 'Required';
-                    }
-                    if (!values.description) {
-                        errors.description = 'Required';
-                    }
-                    return errors;
-                }}
-                onSubmit={handleSubmit}
-            >
-                {({ isSubmitting, errors }) => (
-                    <Form>
-                        <div>
-                            <label htmlFor="title">Title</label>
-                            <br/>
-                            <Field id="title" name="title" placeholder="Request title" />
-                            {errors.title && <ErrorMessage name="title" component="div" />}
-                        </div>
-                        <div>
-                            <label style= {{ textAlign: 'center' }} htmlFor="description">Description</label>
-                            <br/>
-                            <Field style={{ marginBottom: '10px', height: '100px' }}
-                                id="description"
-                                name="description"
-                                placeholder="Describe what you need"
-                                as="textarea"
-                            />
-                            {errors.description && <ErrorMessage name="description" component="div" />}
-                        </div>
-                        <button type="submit" disabled={isSubmitting}>
-                            {isSubmitting ? 'Submitting...' : 'Submit Request'}
-                        </button>
-                    </Form>
-                )}
-            </Formik>
+            <form onSubmit={handleSubmit(onSubmit)}>
+                <div>
+                    <label htmlFor="title">Title</label>
+                    <br/>
+                    <input id="title" name="title" placeholder="Request title" {...register('title', { required: 'Required' })} />
+                    {errors.title && <div>{errors.title.message}</div>}
+                </div>
+                <div>
+                    <label style= {{ textAlign: 'center' }} htmlFor="description">Description</label>
+                    <br/>
+                    <textarea style={{ marginBottom: '10px', height: '100px' }}
+                        id="description"
+                        name="description"
+                        placeholder="Describe what you need"
+                        {...register('description', { required: 'Required' })}
+                    />
+                    {errors.description && <div>{errors.description.message}</div>}
+                </div>
+                <button type="submit" disabled={isSubmitting}>
+                    {isSubmitting ? 'Submitting...' : 'Submit Request'}
+                </button>
+            </form>
         </div>
     );
 };

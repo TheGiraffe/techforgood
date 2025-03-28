@@ -1,4 +1,4 @@
-import getUserProfile from "../../../features/firebase/auth/getuserprofile";
+import getUserProfile from "../../../features/firebase/auth/getUserProfile";
 import { useState } from "react";
 import { useEffect } from "react";
 

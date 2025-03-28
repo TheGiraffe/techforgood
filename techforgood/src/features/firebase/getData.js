@@ -35,3 +35,20 @@ export async function getCollectionData(collectionName, uid) {
 
     return {result, error};
 }
+
+export async function getDataWithoutAuth(searchQuery) {
+    console.log(`Searching requests collection with query: ${searchQuery}`);
+    const q = query(
+        collection(database, "requests"),
+        where("title", ">=", searchQuery),
+        where("title", "<=", searchQuery + '\uf8ff'),
+        where("description", ">=", searchQuery),
+        where("description", "<=", searchQuery + '\uf8ff')
+    );
+    const querySnapshot = await getDocs(q);
+    const result = [];
+    querySnapshot.forEach((doc) => {
+        result.push(doc.data());
+    });
+    return result;
+}

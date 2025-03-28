@@ -5,6 +5,7 @@ import SignupPage from './pages/signup/SignupPage';
 import DashboardPage from './pages/dashboard/DashboardPage';
 import RequestForm from './pages/request/RequestForm';
 import LoginPage from './pages/login/LoginPage';
+import SearchPage from './pages/search/SearchPage';
 
 function App() {
   return (
@@ -25,20 +26,25 @@ function AppContent() {
       </div>
       <div>
         <button onClick={() => { window.location.href = '/' }}>Home</button>
-        <button onClick={() => { window.location.href = '/signup' }}>Sign Up</button>
+        {!user && (
+          <button onClick={() => { window.location.href = '/signup' }}>Sign Up</button>
+        )
+        }
         {user ? (
           <button onClick={logout}>Logout</button>
         ) : (
           <button onClick={() => { window.location.href = '/login' }}>Login</button>
         )}
         <button onClick={() => { window.location.href = '/dashboard' }}>Dashboard</button>
-        <button onClick={() => { window.location.href = '/request' }}>Request</button>
+        <button onClick={() => { window.location.href = '/request' }}>Make a request</button>
+        <button onClick={() => {window.location.href = '/search'}}>Search for work</button>
       </div>
       <Routes>
         <Route path='login' element={<LoginPage />} />
         <Route path='signup' element={<SignupPage />} />
         <Route path='dashboard' element={<DashboardPage />} />
         <Route path='request' element={<RequestForm />} />
+        <Route path='search' element={<SearchPage />} />
       </Routes>
     </div>
   );
