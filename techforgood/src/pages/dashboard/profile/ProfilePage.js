@@ -15,7 +15,7 @@ const ProfilePage = () =>{
     useEffect(() => {
         getProfileDetails();
     }, [])
-    const wantedInfo = ['firstName', 'lastName', 'organizationName', 'email', 'phoneNumber', 'address', 'city', 'state', 'zipCode', 'country'];
+    const wantedInfo = ['firstName', 'lastName', 'organizationName', 'email'];//attempting to get specific info from the profile object. maybe one way to do it?
 
     return (
         <>
