@@ -1,6 +1,6 @@
 import './App.css';
 import { Routes, Route } from 'react-router-dom';
-import { AuthProvider, useAuth } from './AuthProvider';
+import { AuthProvider, useAuth } from './features/firebase/AuthProvider';
 import SignupPage from './pages/signup/SignupPage';
 import DashboardPage from './pages/dashboard/DashboardPage';
 

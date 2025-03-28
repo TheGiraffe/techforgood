@@ -15,6 +15,7 @@ const ProfilePage = () =>{
     useEffect(() => {
         getProfileDetails();
     }, [])
+    const wantedInfo = ['firstName', 'lastName', 'organizationName', 'email', 'phoneNumber', 'address', 'city', 'state', 'zipCode', 'country'];
 
     return (
         <>

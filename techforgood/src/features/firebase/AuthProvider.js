@@ -5,7 +5,7 @@
 import { createContext, useState, useEffect, useContext } from "react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import getData from "./features/firebase/getData";
+import getData from "./getData";
 
 const AuthContext = createContext(); //store's the authentication state
 

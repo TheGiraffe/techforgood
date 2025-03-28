@@ -1,7 +1,7 @@
 import { getFirestore, collection, addDoc } from "firebase/firestore";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useAuth } from "../../AuthProvider";
+import { useAuth } from "../../features/firebase/AuthProvider";
 
 const db = getFirestore();
 

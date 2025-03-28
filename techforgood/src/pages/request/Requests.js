@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import getRequests from '../../features/firebase/auth/getRequests';
 import deleteRequest from '../../features/firebase/auth/deleteRequest';
-import { useAuth } from '../../AuthProvider';
+import { useAuth } from '../../features/firebase/AuthProvider';
 
 const UserRequests = () => {
     const { user, loading: authLoading } = useAuth();

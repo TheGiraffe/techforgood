@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../AuthProvider';
+import { useAuth } from '../../features/firebase/AuthProvider';
 import login from '../../features/firebase/auth/login';
 
 const LoginPage = () => {
