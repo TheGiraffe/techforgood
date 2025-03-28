@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import ProfilePage from './profile/ProfilePage';
 import RequestsPage from '../request/Requests'; // Import the new component
+import RequestForm from '../request/RequestForm';
 
 const Dashboard = () => {
     const [view, setView] = useState('');
@@ -30,6 +31,12 @@ const Dashboard = () => {
                 >
                     Requests
                 </button>
+                <button
+                    style={view === 'MakeARequest' ? activeButtonStyle : buttonStyle}
+                    onClick={() => setView('MakeARequest')}
+                >
+                    Make a request
+                </button>
             </nav>
 
             {view === 'profile' && (
@@ -41,6 +48,12 @@ const Dashboard = () => {
             {view === 'requests' && (
                 <section>
                     <RequestsPage />
+                </section>
+            )}
+
+            {view === 'MakeARequest' && (
+                <section>
+                    <RequestForm />
                 </section>
             )}
         </>
