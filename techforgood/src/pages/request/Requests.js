@@ -63,15 +63,33 @@ const UserRequests = () => {
 
     return (
         <div>
-            <h1>Requests</h1>
-            {currentResults.map((request) => (
-                <div key={request.id}>
-                    <h2>{request.title}</h2>
-                    <p>{request.description}</p>
-                    <p>Submitted on: {new Date(request.created).toLocaleDateString()}</p>
-                    <button onClick={() => handleDelete(request.id)}>Delete</button> {/* Add delete button */}
-                </div>
-            ))}
+            <h1>Requests your or your org have made</h1>
+                <table className="request-table" style={styles.requestTable}>
+                    <thead>
+                        <tr className="table-header-row" style={styles.tableHeaderRow}>
+                            <th className="request-table-header" style={styles.requestTableHeader} scope='col'>Title</th>
+                            <th className="request-table-header" style={styles.requestTableHeader} scope='col'>Description</th>
+                            <th className="request-table-header" style={styles.requestTableHeader} scope='col'>Date Created</th>
+                            <th className="request-table-header" style={styles.requestTableHeader} scope='col'>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {/* looking in to createPortal. Without using react strap, we can create a modal to open to
+                        might be better to display lengthy information like request descrition this way */}
+                    {currentResults.map((request) => (
+                        <tr key={request.id}>
+                            <th scope='row' className='requestTitleHeader' style={styles.requestTitleHeader}>{request.title}</th>
+                            <td>{request.description}</td>
+                            <td>{new Date(request.created).toLocaleDateString()}</td>
+                            <td className='actionsStyling' style={styles.actionsStyling}>
+                                <button >Edit</button> 
+                                {/* onClick={() => handleEdit(request.id)} */}
+                                <button onClick={() => handleDelete(request.id)}>Delete</button>
+                            </td>
+                        </tr>
+                    ))}
+                    </tbody>
+                </table>
             <div>
                 <p>Page {currentPage}</p>
                 {currentPage > 1 && <button onClick={handlePreviousPage}>Previous</button>}
@@ -79,6 +97,36 @@ const UserRequests = () => {
             </div>
         </div>
     );
+};
+
+const styles = {
+    requestTable: {
+        collumns: '10',
+        borderTop: '1px solid black',
+        borderBottom: '1px solid black',
+        margin: '0 auto',
+        width: '60%',
+        borderCollapse: 'collapse',
+    },
+    tableHeaderRow: {
+        backgroundColor: '#f2f2f2',
+        borderBottom: '1px solid black',
+    },
+    requestTableHeader: {
+        fontSize: '18px',
+        padding: '10px',
+    },
+    requestTitleHeader: {
+        textTransform: 'capitalize',
+        padding: '10px',
+        fontWeight: 'bold',
+    },
+    actionsStyling: {
+        display: 'flex',
+        justifyContent: 'center',
+        gap: '5px',
+        padding: '5px',
+    },
 };
 
 export default UserRequests;

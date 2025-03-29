@@ -14,8 +14,8 @@ const RequestForm = () => {
     const onSubmit = async (values) => {
         try {
             await addDoc(collection(db, "requests"), {
-                title: values.title,
-                description: values.description,
+                title: values.title.toLowerCase(),
+                description: values.description.toLowerCase(),
                 created: new Date().toISOString(),
                 uid: user.uid,
             });
