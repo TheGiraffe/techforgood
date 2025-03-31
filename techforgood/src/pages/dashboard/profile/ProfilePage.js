@@ -1,3 +1,49 @@
+import getUserProfile from "../../../features/firebase/auth/getUserProfile";
+import { useState } from "react";
+import { useEffect } from "react";
+
+const ProfilePage = () =>{
+    const [profile, setProfile] = useState({});
+
+    const getProfileDetails = async () => {
+        const profileDetails = await getUserProfile()
+        if (profileDetails){
+            setProfile(profileDetails);
+        }
+    }
+
+    useEffect(() => {
+        getProfileDetails();
+    }, [])
+    const wantedInfo = ['firstName', 'lastName', 'organizationName', 'email'];//attempting to get specific info from the profile object. maybe one way to do it?
+
+    return (
+        <>
+            <p>This is your personal Profile Page.</p>
+            <p>TODO: Make public profile pages as well</p>
+            <p>TODO: Maybe the login should lead to the Dashboard instead?</p>
+            <p>TODO: Incorporate <a href="https://www.freecodecamp.org/news/create-full-stack-app-with-nextjs13-and-firebase/">listening for authentication changes</a> and keeping people signed in and all that.</p>
+            <div>
+                {Object.keys(profile).length !== 0 ? (
+                    <>
+                        <h3>{profile.firstName ? (<>{profile.firstName}'s </>) : (<>{profile.organizationName ? (<>{profile.organizationName}'s </>) : (<></>)}</>)}User Data</h3>
+                        {Object.keys(profile).map((key, idx) => {
+                            return(
+                                <div key={idx}>
+                                    {key} : {profile[key]}
+                                </div>
+                            )
+                        })}
+                    </>
+                ) : <div style={{color:"red"}}>You are not signed in.</div>}
+            </div>
+        </>
+    )
+}
+
+export default ProfilePage;
+
+
 // import { useSelector, useDispatch } from 'react-redux';
 // import { useHistory } from 'react-router-dom';
 // import { Formik, Form, Field } from 'formik';
@@ -63,46 +109,3 @@
 //         </>
 //     );
 // };
-import getUserProfile from "../../features/firebase/auth/getuserprofile";
-import { useState } from "react";
-import { useEffect } from "react";
-
-const ProfilePage = () =>{
-    const [profile, setProfile] = useState({});
-
-    const getProfileDetails = async () => {
-        const profileDetails = await getUserProfile()
-        if (profileDetails){
-            setProfile(profileDetails);
-        }
-    }
-
-    useEffect(() => {
-        getProfileDetails();
-    }, [])
-
-    return (
-        <>
-            <p>This is your personal Profile Page.</p>
-            <p>TODO: Make public profile pages as well</p>
-            <p>TODO: Maybe the login should lead to the Dashboard instead?</p>
-            <p>TODO: Incorporate <a href="https://www.freecodecamp.org/news/create-full-stack-app-with-nextjs13-and-firebase/">listening for authentication changes</a> and keeping people signed in and all that.</p>
-            <div>
-                {Object.keys(profile).length !== 0 ? (
-                    <>
-                        <h3>{profile.firstName ? (<>{profile.firstName}'s </>) : (<>{profile.organizationName ? (<>{profile.organizationName}'s </>) : (<></>)}</>)}User Data</h3>
-                        {Object.keys(profile).map((key, idx) => {
-                            return(
-                                <div key={idx}>
-                                    {key} : {profile[key]}
-                                </div>
-                            )
-                        })}
-                    </>
-                ) : <div style={{color:"red"}}>You are not signed in.</div>}
-            </div>
-        </>
-    )
-}
-
-export default ProfilePage;
