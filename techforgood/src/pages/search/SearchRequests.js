@@ -15,14 +15,23 @@ function SearchRequests() {
         if (!data.searchQuery) {
             return;
         }
-        const result = await searchRequests(data.searchQuery);
-        setSubmittedQueryArr(data.searchQuery.toLowerCase().split(/\W/));
-        console.log(result);
-        // Sort results by most recent date to least recent date
-        const sortedResult = result.sort((a, b) => new Date(b.created) - new Date(a.created));
-        setResults(sortedResult);
-        setSubmitted(true);
-        setCurrentPage(1); // Reset to first page on new search
+        let formattedQueryArray = data.searchQuery.toLowerCase().split(/\W/);
+
+        // In case we want to exclude certain linking words at some point to prevent too many random matches
+        // const exclude = ["the", "a"];
+        // formattedQueryArray = formattedQueryArray.filter((item) => !(exclude.includes(item)));
+
+        if (formattedQueryArray.length > 0){
+            const [result, queryArr] = await searchRequests(data.searchQuery, formattedQueryArray);
+            setSubmittedQueryArr(queryArr);
+            console.log(result);
+            // Sort results by most recent date to least recent date
+            const sortedResult = result.sort((a, b) => new Date(b.created) - new Date(a.created));
+            setResults(sortedResult);
+            setSubmitted(true);
+            setCurrentPage(1); // Reset to first page on new search
+        }
+        
     };
 
     const handleNextPage = () => {
@@ -68,6 +77,24 @@ function SearchRequests() {
                                         }
                                     })}</p>
                                     <p>Submitted on: {new Date(result.created).toLocaleDateString()}</p>
+                                    {result.keywords ? (
+                                        <p>Keywords: {result.keywords.map((words, idx) => {
+                                            const words_split = words.split(/\s/)
+                                            const pieces = []
+                                            for (const word of words_split){
+                                                if (submittedQueryArr.includes(word.replace(/\W/, "").toLowerCase())){
+                                                    pieces.push(<Fragment key={`kw-${idx}-${word}`}><span style={{backgroundColor: "yellow"}}>{word}</span> </Fragment>)
+                                                } else {
+                                                    pieces.push(<Fragment key={`kw-${idx}-${word}`}>{word} </Fragment>)
+                                                }
+                                            }  
+                                            {idx==result.keywords.length - 1 ? pieces.push(<Fragment key={`kw-${idx}`}></Fragment>) : pieces.push(<Fragment key={`kw-${idx}`}>, </Fragment>)}
+                                            return pieces
+                                        })}</p>
+                                    ) : (
+                                        <></>
+                                    )}
+                                    
                                 </div>
                             ))}
                             <div>

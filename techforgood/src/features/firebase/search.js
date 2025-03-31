@@ -7,9 +7,8 @@ const database = getFirestore(firebase_app);
 // New set of search / lookup functions that may come in handy as future utilities
 
 // Look up requests by title fragments, description fragments, or keywords.
-export async function searchRequests(searchQuery){
-    const formattedQueryArray = searchQuery.toLowerCase().split(/\W/);
-
+export async function searchRequests(searchQuery, formattedQueryArray){
+    
     console.log(`Searching requests collection with query: ${searchQuery}`);
     const titleQuery = query(
         collection(database, "requests"),
@@ -62,7 +61,7 @@ export async function searchRequests(searchQuery){
     });  
 
 
-    return Array.from(result.values());
+    return [Array.from(result.values()), formattedQueryArray];
 }
 
 // Look up a specific user or organization
