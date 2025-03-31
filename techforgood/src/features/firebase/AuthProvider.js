@@ -5,7 +5,7 @@
 import { createContext, useState, useEffect, useContext } from "react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import getData from "./getData";
+import { getDataById } from "./getData";
 
 const AuthContext = createContext(); //store's the authentication state
 
@@ -26,7 +26,7 @@ export const AuthProvider = ({ children }) => {
       setUser(currentUser);
       setLoading(false);
       if (currentUser) {
-        const { result, error } = await getData('users', currentUser.uid);
+        const { result, error } = await getDataById('users', currentUser.uid);
         if (!error) {
           setProfile(result);
         }

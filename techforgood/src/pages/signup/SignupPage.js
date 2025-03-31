@@ -77,7 +77,9 @@ const SignupPage = () => {
         
         const {result, error} = await signup(signupObj);
         if (error){
-            setErrMessage(error.message);
+            if (error == "Not Approved"){
+                setErrMessage("Sorry, your email address is not on the approved testers list. If this is a mistake, please make sure you typed your email address in correctly, and reach out to us if needed.")
+            }
             return console.error(error);
         }
         console.log(result);

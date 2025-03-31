@@ -12,12 +12,24 @@ const RequestForm = () => {
     const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm();
 
     const onSubmit = async (values) => {
+        const titleFragments = Array.from(new Set(values.title.toLowerCase().split(/\s|\W/))).filter(item => item !== "");
+        const descriptionFragments = Array.from(new Set(values.description.toLowerCase().split(/\s|\W/))).filter(item => item !== "");
+        const kw = values.keywords
+        console.log(kw)
+        // let keywordsSquished = kw.toLowerCase().replace(/\s/, "").split(/,\s*/)
+        const keywords = Array.from(new Set(kw.split(/,\s*/)));
+        const keywordsFragments = Array.from(new Set(kw.toLowerCase().split(/\s|[,]/))).filter(item => item !== "");
+
         try {
             await addDoc(collection(db, "requests"), {
-                title: values.title.toLowerCase(),
-                description: values.description.toLowerCase(),
+                title: values.title,
+                description: values.description,
                 created: new Date().toISOString(),
                 uid: user.uid,
+                keywords: keywords,
+                _titleFragments: titleFragments,
+                _descriptionFragments: descriptionFragments,
+                _keywordsFragments: keywordsFragments
             });
             setRequestSubmitted(true);
             reset();
@@ -56,6 +68,17 @@ const RequestForm = () => {
                         {...register('description', { required: 'Required' })}
                     />
                     {errors.description && <div>{errors.description.message}</div>}
+                </div>
+                <div>
+                <label style= {{ textAlign: 'center' }} htmlFor="keywords">Keywords (Separate by Commas)</label>
+                    <br/>
+                    <textarea style={{ marginBottom: '10px', height: '50px' }}
+                        id="keywords"
+                        name="keywords"
+                        placeholder="Keywords"
+                        {...register('keywords', { required: 'Required' })}
+                    />
+                    {errors.keywords && <div>{errors.keywords.message}</div>}
                 </div>
                 <button type="submit" disabled={isSubmitting}>
                     {isSubmitting ? 'Submitting...' : 'Submit Request'}

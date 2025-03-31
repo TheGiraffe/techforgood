@@ -3,9 +3,11 @@ import { getFirestore, doc, getDoc, getDocs, collection, query, where } from "fi
 // getDocs are used to pull multple documents from a collection
 // query and where is used to filter the documents
 // collection the collection of documents that the data is being pulled from
+
+// query get limit
 const database = getFirestore(firebase_app);
 
-export default async function getData(collection, id){
+export async function getDataById(collection, id){
     let result,
     error = null;
 
