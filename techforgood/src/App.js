@@ -21,7 +21,7 @@ function AppContent() {
   return (
     <div className="App">
       <div>
-        <h1>Tech For Good</h1>
+        <h1 style={{color: "green"}}>Tech For Good</h1>
         <h3>Look for your next tech opportunity(?)</h3>
       </div>
       <div>
