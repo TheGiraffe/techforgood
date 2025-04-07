@@ -14,6 +14,7 @@ jobs:
       - run: | 
           cd techforgood
           npm ci && CI="" npm run build
+        env: $${{ secrets.ENV_DEVELOPMENT }}
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
@@ -21,4 +22,3 @@ jobs:
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_2 }}
           channelId: live
           projectId: codeforgood-2025
-      - env: $${{ secrets.ENV_DEVELOPMENT }}
