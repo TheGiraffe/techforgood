@@ -22,7 +22,7 @@ function AppContent() {
     <div className="App">
       <div>
         <h1 style={{color: "#61ba88", fontSize: "8em"}}>Tech For Good</h1>
-        <h3>Look for your next tech opportunity(?)</h3>
+        <h3 style={{color: "#00522c"}}>Look for your next tech opportunity(?)</h3>
       </div>
       <div>
         <button onClick={() => { window.location.href = '/' }}>Home</button>
