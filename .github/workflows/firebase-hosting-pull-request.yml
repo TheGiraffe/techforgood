@@ -16,7 +16,7 @@ jobs:
       - run: | 
           cd techforgood
           npm ci && CI="" npm run build
-        env: $${{ secrets.ENV_DEVELOPMENT }}
+        env: ${{ secrets.ENV_DEVELOPMENT }}
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
