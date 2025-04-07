@@ -21,3 +21,4 @@ jobs:
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_2 }}
           channelId: live
           projectId: codeforgood-2025
+      - env: $${{ secrets.ENV_DEVELOPMENT }}
