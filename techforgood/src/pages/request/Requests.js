@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import getRequests from '../../features/firebase/auth/getRequests';
 import deleteRequest from '../../features/firebase/auth/deleteRequest';
 import { useAuth } from '../../features/firebase/AuthProvider';
+import UpdateRequestModal from './UpdateRequestModal'; // Import the modal component
 
 const UserRequests = () => {
     const { user, loading: authLoading } = useAuth();
@@ -10,6 +11,10 @@ const UserRequests = () => {
     const [error, setError] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const resultsPerPage = 5;
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedRequest, setSelectedRequest] = useState(null);
+    const [successMessage, setSuccessMessage] = useState(''); // State for success message
+    const [fadeOut, setFadeOut] = useState(false); // State for fade-out effect
 
     useEffect(() => {
         const fetchRequests = async () => {
@@ -45,6 +50,16 @@ const UserRequests = () => {
         }
     };
 
+    const handleEdit = (request) => {
+        setSelectedRequest(request);
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+        setSelectedRequest(null);
+    };
+
     const handleNextPage = () => {
         setCurrentPage(prevPage => prevPage + 1);
     };
@@ -64,30 +79,52 @@ const UserRequests = () => {
     return (
         <div>
             <h1>Requests your or your org have made</h1>
+            {successMessage && (
+                <p
+                    style={{
+                        color: 'green',
+                        marginBottom: '10px',
+                        opacity: fadeOut ? 0 : 1, // Apply fade-out effect
+                        transition: 'opacity 1s ease-in-out', // Smooth transition
+                    }}
+                >
+                    {successMessage}
+                </p>
+            )}
                 <table className="request-table" style={styles.requestTable}>
                     <thead>
                         <tr className="table-header-row" style={styles.tableHeaderRow}>
                             <th className="request-table-header" style={styles.requestTableHeader} scope='col'>Title</th>
                             <th className="request-table-header" style={styles.requestTableHeader} scope='col'>Description</th>
+                            <th className="request-table-header" style={styles.requestTableHeader} scope='col'>Keywords</th>
                             <th className="request-table-header" style={styles.requestTableHeader} scope='col'>Date Created</th>
                             <th className="request-table-header" style={styles.requestTableHeader} scope='col'>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {/* looking in to createPortal. Without using react strap, we can create a modal to open to
-                        might be better to display lengthy information like request descrition this way */}
-                    {currentResults.map((request) => (
-                        <tr key={request.id}>
-                            <th scope='row' className='requestTitleHeader' style={styles.requestTitleHeader}>{request.title}</th>
-                            <td>{request.description}</td>
-                            <td>{new Date(request.created).toLocaleDateString()}</td>
-                            <td className='actionsStyling' style={styles.actionsStyling}>
-                                <button >Edit</button> 
-                                {/* onClick={() => handleEdit(request.id)} */}
-                                <button onClick={() => handleDelete(request.id)}>Delete</button>
-                            </td>
-                        </tr>
-                    ))}
+                        {currentResults.map((request) => (
+                            <tr key={request.id}>
+                                <th scope='row' className='requestTitleHeader' style={styles.requestTitleHeader}>{request.title}</th>
+                                <td>
+                                    {request.description.length > 100 ? (
+                                        <span
+                                            style={{ cursor: 'pointer', color: 'blue', textDecoration: 'underline' }}
+                                            onClick={() => handleEdit(request)}
+                                        >
+                                            {request.description.substring(0, 100)}...
+                                        </span>
+                                    ) : (
+                                        request.description
+                                    )}
+                                </td>
+                                <td>{request.keywords ? request.keywords.join(', ') : 'N/A'}</td>
+                                <td>{new Date(request.created).toLocaleDateString()}</td>
+                                <td className='actionsStyling' style={styles.actionsStyling}>
+                                    <button onClick={() => handleEdit(request)}>Edit</button>
+                                    <button onClick={() => handleDelete(request.id)}>Delete</button>
+                                </td>
+                            </tr>
+                        ))}
                     </tbody>
                 </table>
             <div>
@@ -95,6 +132,26 @@ const UserRequests = () => {
                 {currentPage > 1 && <button onClick={handlePreviousPage}>Previous</button>}
                 {indexOfLastResult < requests.length && <button onClick={handleNextPage}>Next</button>}
             </div>
+            {isModalOpen && (
+                <UpdateRequestModal
+                    isOpen={isModalOpen}
+                    onRequestClose={closeModal}
+                    modalContent={selectedRequest} // Ensure selectedRequest is passed here
+                    onSubmit={(updatedRequest) => {
+                        setRequests((prevRequests) =>
+                            prevRequests.map((request) =>
+                                request.id === updatedRequest.id ? updatedRequest : request
+                            )
+                        );
+                        setSuccessMessage('Your request has been updated'); // Set success message
+                        console.log('Request updated successfully'); // Log message to console
+                        setFadeOut(false); // Reset fade-out state
+                        setTimeout(() => setFadeOut(true), 9000); // Start fade-out after 9 seconds
+                        setTimeout(() => setSuccessMessage(''), 10000); // Clear the message after 10 seconds
+                        closeModal();
+                    }}
+                />
+            )}
         </div>
     );
 };
@@ -122,8 +179,7 @@ const styles = {
         fontWeight: 'bold',
     },
     actionsStyling: {
-        display: 'flex',
-        justifyContent: 'center',
+
         gap: '5px',
         padding: '5px',
     },
