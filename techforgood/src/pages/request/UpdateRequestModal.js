@@ -64,7 +64,7 @@ const UpdateRequestModal = ({ isOpen, onRequestClose, modalContent, onSubmit }) 
                             id="description"
                             defaultValue={modalContent?.description || ''}
                             {...register('description', { required: true })}
-                            style={{ width: '100%', height: '150px'}}
+                            style={{ width: '500px', height: '150px'}}
                         />
                     </div>
                     <div style={styles.formGroup}>

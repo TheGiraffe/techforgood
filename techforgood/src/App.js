@@ -19,7 +19,11 @@ function AppContent() {
   const { user, logout } = useAuth();
 
   return (
-    <div className="App">
+    <div className="App" style={{ fontFamily: "'Roboto', sans-serif" }}>
+      <link
+        href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap"
+        rel="stylesheet"
+      />
       <div>
         <h1 style={{color: "#61ba88", fontSize: "8em"}}>Tech For Good</h1>
         <h3 style={{color: "#00522c"}}>Look for your next tech opportunity(?)</h3>

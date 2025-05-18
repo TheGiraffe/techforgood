@@ -106,7 +106,7 @@ const UserRequests = () => {
                             <tr key={request.id}>
                                 <th scope='row' className='requestTitleHeader' style={styles.requestTitleHeader}>{request.title}</th>
                                 <td>
-                                    {request.description.length > 100 ? (
+                                    {request.description.length > 50 ? (
                                         <span
                                             style={{ cursor: 'pointer', color: 'blue', textDecoration: 'underline' }}
                                             onClick={() => handleEdit(request)}
@@ -171,7 +171,7 @@ const styles = {
     },
     requestTableHeader: {
         fontSize: '18px',
-        padding: '10px',
+        padding: '10px 20px', // Add horizontal padding for spacing
     },
     requestTitleHeader: {
         textTransform: 'capitalize',
@@ -179,9 +179,8 @@ const styles = {
         fontWeight: 'bold',
     },
     actionsStyling: {
-
         gap: '5px',
-        padding: '5px',
+        padding: '5px 20px', // Add horizontal padding for spacing
     },
 };
 
