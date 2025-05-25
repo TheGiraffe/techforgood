@@ -44,20 +44,21 @@ export async function searchRequests(searchQuery, formattedQueryArray){
     ]);
     const result = new Map(); //stores results of the query in to an array
     
+    // adjusted so that the document id is also stored in the results map
     titleSnapshot.forEach((doc) => {
-        result.set(doc.id, doc.data());
+        result.set(doc.id, {id: doc.id, ...doc.data()});
     });
     titleFragmentsSnapshot.forEach((doc) => {
-        result.set(doc.id, doc.data());
+        result.set(doc.id, {id: doc.id, ...doc.data()});
     });    
     keywordsFragmentsSnapshot.forEach((doc) => {
-        result.set(doc.id, doc.data());
+        result.set(doc.id, {id: doc.id, ...doc.data()});
     });    
     descriptionSnapshot.forEach((doc) => {
-        result.set(doc.id, doc.data());
+        result.set(doc.id, {id: doc.id, ...doc.data()});
     });  
     descriptionFragmentsSnapshot.forEach((doc) => {
-        result.set(doc.id, doc.data());
+        result.set(doc.id, {id: doc.id, ...doc.data()});
     });  
 
 

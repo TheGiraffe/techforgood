@@ -64,7 +64,7 @@ const RequestForm = () => {
                         placeholder="Request title"
                         maxLength={75}
                         {...register('title', {
-                            required: 'Required',
+                            required: true,
                             maxLength: {
                                 value: 75,
                             }

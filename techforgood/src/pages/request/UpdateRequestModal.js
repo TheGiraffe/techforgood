@@ -1,10 +1,12 @@
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { useState } from 'react';
 import { doc, updateDoc, getFirestore } from 'firebase/firestore'; // Import Firestore methods
 
 
 const UpdateRequestModal = ({ isOpen, onRequestClose, modalContent, onSubmit }) => {
     const { register, handleSubmit, reset } = useForm();
+    const [titleValue, setTitleValue] = useState("");
 
     useEffect(() => {
         if (isOpen && modalContent) { // Ensure modalContent is valid and modal is open
@@ -39,11 +41,23 @@ const UpdateRequestModal = ({ isOpen, onRequestClose, modalContent, onSubmit }) 
 
     return (
         <div style={{ ...styles.modalOverlay }}>
+            <style>
+                {`
+                    input, textarea {
+                        font-family: 'Roboto', sans-serif;
+                    }
+                    input::placeholder, textarea::placeholder {
+                        font-family: 'Roboto', sans-serif;
+                    }
+
+                `}
+            </style>
             <div
                 style={{
                     ...styles.modalContent,
                     width: 'auto', // Allow the modal to expand based on content
                     maxWidth: '90%', // Prevent it from becoming too wide
+                    fontFamily: "Roboto, sans-serif",
                 }}
             >
                 <h2>Update Request</h2>
@@ -54,10 +68,29 @@ const UpdateRequestModal = ({ isOpen, onRequestClose, modalContent, onSubmit }) 
                             type="text"
                             id="title"
                             defaultValue={modalContent?.title || ''}
-                            {...register('title', { required: true })}
-                            style={{ width: '100%' }}
+                            {...register('title', { 
+                                required: true,
+                                maxLength: {
+                                    value: 75,
+                                },
+                            })}
+                            style={{ width: '500px' }}
+                            value={titleValue}
+                            onChange={(e) => {
+                                setTitleValue(e.target.value);
+                            }}
                         />
                     </div>
+                    <span style={{ 
+                        fontSize: '14px', 
+                        color: 'red',
+                        position: 'absolute',
+                        transform: 'translateY(-200%) translateX(400%)',
+                        width: '50px',                        
+                        textAlign: 'right',
+                        }}>
+                        {titleValue.length}/75
+                    </span>
                     <div style={styles.formGroup}>
                         <label htmlFor="description" style={{ display: 'block', marginBottom: '5px' }}>Description</label>
                         <textarea
@@ -69,11 +102,11 @@ const UpdateRequestModal = ({ isOpen, onRequestClose, modalContent, onSubmit }) 
                     </div>
                     <div style={styles.formGroup}>
                         <label htmlFor="keywords" style={{ display: 'block', marginBottom: '5px' }}>Keywords (Separate by Commas)</label>
-                        <textarea
+                        <input
                             id="keywords"
                             defaultValue={modalContent?.keywords?.join(', ') || ''}
                             {...register('keywords', { required: true })}
-                            style={{ width: '100%', height: '100px' }}
+                            style={{ width: '500px' }}
                         />
                     </div>
                     <div style={styles.buttonGroup}>

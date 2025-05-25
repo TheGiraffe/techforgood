@@ -177,6 +177,8 @@ const styles = {
         textTransform: 'capitalize',
         padding: '10px',
         fontWeight: 'bold',
+        textAlign: 'left', // Align text to the left
+        verticalAlign: 'bottom', // Justify content to the left
     },
     actionsStyling: {
         gap: '5px',
