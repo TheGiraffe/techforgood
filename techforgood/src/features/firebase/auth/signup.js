@@ -18,7 +18,9 @@ export default async function signup(signupObj) {
                 if (result.email === signupObj.email){
                     approved = true;
                     console.log("Approved!");
-                    role = result.role;
+                    if (result.role){
+                        role = result.role;
+                    }
                 }
             }
         }
