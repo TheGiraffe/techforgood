@@ -9,7 +9,7 @@ export default function TechForGoodNavbar({accountType, displayName}) {
     const [collapsed, setCollapsed] = useState(true)
     const toggle = () => setCollapsed(!collapsed)
     return(
-        <Navbar color="dark" dark expand="md" fixed="top">
+        <Navbar color="dark" dark expand="md" sticky='top'>
             <NavbarBrand href="/" style={{ color: "#61ba88" }}>Tech For Good</NavbarBrand>
             <Collapse isOpen={!collapsed} navbar>
                 <Nav navbar>

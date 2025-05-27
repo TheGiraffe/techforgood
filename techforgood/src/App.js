@@ -74,7 +74,7 @@ function AppContent() {
         )}
         <button onClick={() => {navigate('/search')}}>Search for work</button>
       </div> */}
-      <div style={{ marginTop: "4em" }}>
+      <div>
         <Routes>
           <Route path='/' element={<HomePage />} />
           <Route path='/login' element={<LoginPage />} />

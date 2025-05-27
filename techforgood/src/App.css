@@ -59,3 +59,9 @@
 .userOptions{
   max-width: 50%;
 }
+
+.homePage{
+  background-image: url("./assets/TechForGoodBackground.gif");
+  background-size: 100%;
+  height: 70vh;
+}
