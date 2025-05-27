@@ -134,3 +134,4 @@ dist
 .pnp.js
 .DS_Store
 build
+build/*
