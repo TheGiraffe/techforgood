@@ -1,8 +1,10 @@
 import { Navbar, NavbarBrand, Nav, NavLink, NavItem, NavbarText, NavbarToggler, Collapse } from 'reactstrap';
 import { useState } from 'react';
 import { useAuth } from '../features/firebase/AuthProvider';
+import { useNavigate } from 'react-router-dom';
 
 export default function TechForGoodNavbar({accountType, displayName}) {
+    const navigate = useNavigate();
     const { user, logout } = useAuth();
     const [collapsed, setCollapsed] = useState(true)
     const toggle = () => setCollapsed(!collapsed)
@@ -23,7 +25,7 @@ export default function TechForGoodNavbar({accountType, displayName}) {
                             Search for work
                         </NavLink>
                     </NavItem>
-                                        {!user && (
+                        {!user && (
                         <NavItem>
                             <NavLink href="/signup">
                                 Sign Up
