@@ -9,6 +9,7 @@ export default async function getUserProfile() {
     const user = auth.currentUser;
     if (user !== null){
         const userProfile = await getDataById('users', user.uid);
+        console.log(userProfile)
         return(userProfile)
     }
 }
