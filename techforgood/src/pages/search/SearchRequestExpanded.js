@@ -4,7 +4,6 @@ import { getDataById } from "../../features/firebase/getData";
 
 const SearchRequestExpanded = () => {
     const { id } = useParams();
-    console.log("Param ID:", id);
     const navigate = useNavigate();
     const location = useLocation();
     const [request, setRequest] = useState(location.state?.request || null);
@@ -14,7 +13,7 @@ const SearchRequestExpanded = () => {
     const searchInput = location.state?.searchInput;
 
     useEffect(() => {
-        if (!request && id) {
+        if (!request && id && /^[a-zA-Z0-9_-]{20,}$/.test(id)) {
             getDataById('requests', id).then (data => {
                 if (data && !data.console) {
                     setRequest(data);
@@ -47,7 +46,9 @@ const SearchRequestExpanded = () => {
                     {/* Add more fields as needed */}
                 </div>
             )}
-            <button onClick={loadPreviousSearchRequestsResults}>
+            <button 
+                type='button'
+                onClick={loadPreviousSearchRequestsResults}>
                 Back to Search Requests
             </button>
         </div>
