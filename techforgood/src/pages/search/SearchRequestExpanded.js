@@ -46,11 +46,12 @@ const SearchRequestExpanded = () => {
                     {/* Add more fields as needed */}
                 </div>
             )}
+            <button>Apply</button>
             <button 
                 type='button'
                 onClick={loadPreviousSearchRequestsResults}>
                 Back to Search Requests
-            </button>
+            </button> 
         </div>
     );
 }
