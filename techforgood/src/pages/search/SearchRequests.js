@@ -41,39 +41,63 @@ function SearchRequests() {
         }
         
     };
-    
-    // Load previous search results if available
-    // This is used when the user navigates back from the expanded request page, either using the 
-    // back button or the "Back to Search Requests" button
-    // This is also used to check if the page was refreshed, if page was refreshed, state will not be restored
-    // and the user will have to search again
+
     useEffect(() => {
-        // check for browser refresh
+        // Detect if this is a browser refresh
         let isRefresh = false;
-
-        // for modern browsers
         if (performance.getEntriesByType) {
-            const navigationEntries = performance.getEntriesByType('navigation');
-            if (navigationEntries.length > 0) {
-                isRefresh = navigationEntries[0].type === 'reload';
-            }
+            const nav = performance.getEntriesByType('navigation');
+            if (nav.length > 0) isRefresh = nav[0].type === 'reload';
         }
-
-        // for older browsers
-        if(typeof performance.navigation !== 'undefined') {
+        if (typeof performance.navigation !== 'undefined') {
             isRefresh = performance.navigation.type === 1;
         }
 
-        // search page state is restored if the page is not reloaded
+        // Restore state
         if (!isRefresh && location.state?.previousResults) {
-            setResults(location.state.previousResults);
-            setSubmittedQueryArr(location.state.submittedQueryArr);
-            setCurrentPage(location.state.currentPage);
+            const { previousResults, submittedQueryArr, currentPage, searchInput } = location.state;
+            setResults(previousResults);
+            setSubmittedQueryArr(submittedQueryArr);
+            setCurrentPage(currentPage);
             setSubmitted(true);
-            setSearchInput(location.state.searchInput || '');
-            setValue('searchQuery', location.state.searchInput || '');
+            setSearchInput(searchInput || '');
+            setValue('searchQuery', searchInput || '');
+        } else if (isRefresh) {
+            const saved = localStorage.getItem('searchPageState');
+            if (saved) {
+                const { results, submittedQueryArr, currentPage, searchInput } = JSON.parse(saved);
+                setResults(results);
+                setSubmittedQueryArr(submittedQueryArr);
+                setCurrentPage(currentPage);
+                setSubmitted(true);
+                setSearchInput(searchInput || '');
+                setValue('searchQuery', searchInput || '');
+            }
         }
     }, [location.state, setValue]);
+
+    useEffect(() => {
+        // Save state on change
+        if (submitted) {
+            localStorage.setItem('searchPageState', JSON.stringify({
+                results,
+                submittedQueryArr,
+                currentPage,
+                searchInput
+        }));
+        }
+    }, [results, submittedQueryArr, currentPage, searchInput, submitted]);
+    
+    useEffect(() => {
+        // Clear state only on real page reload or close
+        const clearState = () => {
+            localStorage.removeItem('searchPageState');
+        };
+        window.addEventListener('beforeunload', clearState);
+        return () => {
+            window.removeEventListener('beforeunload', clearState);
+        };
+    }, []);
 
     const handleNextPage = () => {
         setCurrentPage(prevPage => prevPage + 1);
@@ -129,7 +153,7 @@ function SearchRequests() {
                                                     return <Fragment key={idx}>{word} </Fragment>
                                                 }
                                             })}</th>
-                                            <td>{result.description.split(/\s/).map((word, idx) => {
+                                            <td>{(result.briefDescription || '').split(/\s/).map((word, idx) => {
                                                 if (submittedQueryArr.includes(word.replace(/\W/, "").toLowerCase())){
                                                     return <Fragment key={idx}><span style={{backgroundColor: "yellow"}}>{word}</span> </Fragment>
                                                 } else {
@@ -155,18 +179,26 @@ function SearchRequests() {
                                             )}
                                             <td>{new Date(result.created).toLocaleDateString()}</td>
                                             <td className='actionsStyling' style={styles.actionsStyling}>
-                                                <button onClick={() =>{
-                                                    navigate(`/search/expanded/${result.id}`, { 
-                                                        state: { 
-                                                            request: result,
-                                                            previousResults: results,
-                                                            submittedQueryArr: submittedQueryArr,
-                                                            currentPage: currentPage,
-                                                            indexOfLastResult: indexOfLastResult,
-                                                            searchInput: getValues('searchQuery'),
+                                                <button 
+                                                    type='button'
+                                                    onClick={() => {
+                                                        // Validate the ID before navigating
+                                                        if (/^[a-zA-Z0-9_-]{20,}$/.test(result.id)) {
+                                                            console.log(`Validated request ID: ${result.id}`);
+                                                            navigate(`/search/expanded/${result.id}`, { 
+                                                                state: { 
+                                                                    request: result,
+                                                                    previousResults: results,
+                                                                    submittedQueryArr: submittedQueryArr,
+                                                                    currentPage: currentPage,
+                                                                    indexOfLastResult: indexOfLastResult,
+                                                                    searchInput: getValues('searchQuery'),
+                                                                }
+                                                            });
+                                                        } else {
+                                                            alert("Invalid request ID.");
                                                         }
-                                                    })   
-                                                }}>
+                                                    }}>
                                                     Learn More
                                                 </button>
                                             </td>
