@@ -8,11 +8,12 @@ const db = getFirestore();
 const RequestForm = () => {
     const [requestSubmitted, setRequestSubmitted] = useState(false);
     const [error, setError] = useState(null);
-    const [titleValue, setTitleValue] = useState("");
+
     const { user, loading } = useAuth(); // Use the context values
-    const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm();
+    const { register, handleSubmit, formState: { errors, isSubmitting }, reset, watch } = useForm();
 
     const onSubmit = async (values) => {
+        console.log("Submitting request with values:", values);
         const titleFragments = Array.from(new Set(values.title.toLowerCase().split(/\s|\W/))).filter(item => item !== "");
         const descriptionFragments = Array.from(new Set(values.description.toLowerCase().split(/\s|\W/))).filter(item => item !== "");
         const kw = values.keywords
@@ -24,16 +25,17 @@ const RequestForm = () => {
         try {
             await addDoc(collection(db, "requests"), {
                 title: values.title,
+                briefDescription: values.briefDescription,
                 description: values.description,
-                created: new Date().toISOString(),
                 uid: user.uid,
                 keywords: keywords,
+                created: new Date().toISOString(),
                 _titleFragments: titleFragments,
                 _descriptionFragments: descriptionFragments,
                 _keywordsFragments: keywordsFragments
             });
             setRequestSubmitted(true);
-            setTitleValue("");
+
             // Reset the form fields after submission
             reset();
         } catch (err) {
@@ -70,26 +72,32 @@ const RequestForm = () => {
                             }
                         })}
                         style={{ marginBottom: '10px', width: '500px', height: '30px', borderRadius: '5px' }}
-                        // just made this easier to read and added a max length
-                        value={titleValue}
-                        onChange={e => {
-                            setTitleValue(e.target.value);
-                        }
-                        }
                     />
                     <span style={{ 
                         fontSize: '14px', 
                         color: 'red', 
-                        position: 'fixed',
+                        position: 'absolute',
                         marginTop: '10px',
                         width: '48px',
                         transform: 'translateX(-55px)',
                         textAlign: 'right',
-                        }}>
-                        {titleValue.length}/75
+                    }}>
+                        {watch('title','').length}/75
                     </span>
                     {/* added a character counter */}
                     {errors.title && <div>{errors.title.message}</div>}
+                </div>
+                <div>
+                    <label style= {{ textAlign: 'center' }} htmlFor="briefDescription">Brief Description</label>
+                    <br/>
+                    <textarea style={{ marginBottom: '10px', width: '500px', height: '150px', borderRadius: '5px' }}
+                        id="briefDescription"
+                        name="briefDescription"
+                        placeholder="Briefly describe what you need, this will be the first thing potential volunteers will see when they view your request."
+                        maxLength={300}
+                        {...register('briefDescription', { required: 'Required' })}
+                    />
+                    {errors.briefDescription && <div>{errors.briefDescription.message}</div>}
                 </div>
                 <div>
                     <label style= {{ textAlign: 'center' }} htmlFor="description">Description</label>
@@ -97,15 +105,20 @@ const RequestForm = () => {
                     <textarea style={{ marginBottom: '10px', width: '500px', height: '150px', borderRadius: '5px' }}
                         id="description"
                         name="description"
-                        placeholder="Describe what you need"
+                        placeholder="Please provide a detailed description of your request, including any specific requirements or preferences you have. There is a character limit of 5000. Volunteers will be able to see this description on the expanded request page or when they click to learn more about your request. If you have trouble seeing the full description, you can click and drag the bottom right corner of the text area to resize it to your liking."
+                        maxLength={5000}
                         {...register('description', { required: 'Required' })}
                     />
                     {errors.description && <div>{errors.description.message}</div>}
                 </div>
                 <div>
                 <label style= {{ textAlign: 'center' }} htmlFor="keywords">Keywords (Separate by Commas)</label>
+                    <p style= {{margin: '0px'}}>Keywords will help volunteers search for your request. <br/ > 
+                    You create key words like so: as "web", "development", or "web development". <br/>
+                    Be as specific as possible, and separate keywords or phrases with commas. <br/>
+                    </p>
                     <br/>
-                    <input style={{ marginBottom: '10px', width: '500px', borderRadius: '5px', height: '30px' }}
+                    <input style={{ marginTop: '0px', marginBottom: '10px', width: '500px', borderRadius: '5px', height: '30px' }}
                         id="keywords"
                         name="keywords"
                         placeholder="Keywords"
@@ -127,7 +140,7 @@ const RequestForm = () => {
                     <button
                         type="button" onClick={() => {
                             reset();
-                            setTitleValue("");
+
                         }}
                         style={{
                             color: 'black',
