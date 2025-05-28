@@ -14,6 +14,7 @@ import KSKaiauluLogo from "./assets/KS-Kaiaulu-Horizontal-Logo.png"
 import TechForGoodNavbar from './components/TechForGoodNavbar';
 import { useState, useEffect } from 'react';
 import getUserProfile from './features/firebase/auth/getUserProfile';
+import NewBidPage from './pages/bids/NewBidPage';
 
 function App() {
   return (
@@ -82,6 +83,7 @@ function AppContent() {
           <Route path='/dashboard' element={<DashboardPage />} />
           <Route path='/search' element={<SearchPage />} />
           <Route path='/search/expanded/:id' element={<SearchRequestExpanded />} />
+          <Route path='/bids/new/' element={<NewBidPage />} />
         </Routes>
       </div>
       <img src={KSKaiauluLogo} width={"50%"} />
