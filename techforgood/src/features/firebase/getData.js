@@ -37,3 +37,18 @@ export async function getCollectionData(collectionName, uid) {
 
     return {result, error};
 }
+
+export async function getDataByExactAttributeValue(collectionName, attributeName, attributeValue) {
+    let result,
+    error = null;
+
+    try {
+        const q = query(collection(database, collectionName), where(attributeName, "==", attributeValue));
+        const querySnapshot = await getDocs(q);
+        result = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    } catch (err) {
+        error = new Error("Does not exist");
+    }
+
+    return {result, error};
+}
