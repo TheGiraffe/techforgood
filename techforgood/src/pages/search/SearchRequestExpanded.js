@@ -35,6 +35,10 @@ const SearchRequestExpanded = () => {
         });
     };
 
+    const makeBid = () => {
+        navigate(`/bids/new?request=${id}&title=${request.title}`)
+    }
+
     return (
         <div>
             <h1>Expanded request page</h1>
@@ -46,7 +50,7 @@ const SearchRequestExpanded = () => {
                     {/* Add more fields as needed */}
                 </div>
             )}
-            <button>Apply</button>
+            <button type='button' onClick={makeBid}>Apply</button>
             <button 
                 type='button'
                 onClick={loadPreviousSearchRequestsResults}>
