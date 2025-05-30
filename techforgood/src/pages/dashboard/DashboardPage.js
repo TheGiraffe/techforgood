@@ -1,20 +1,39 @@
 import { useState, useEffect } from 'react';
 import ProfilePage from './profile/ProfilePage';
-import RequestsPage from '../request/Requests'; // Import the new component
+import UserRequests from '../request/Requests';
 import RequestForm from '../request/RequestForm';
+import UserBids from '../bids/Bids';
+
+// imports for useeffect to grab components needed to conditionally render buttons
+import getUserProfile from "../../features/firebase/auth/getUserProfile";
+import { useAuth } from '../../features/firebase/AuthProvider';
 
 const Dashboard = () => {
+    const {user, loading: authLoading} = useAuth();
     const [view, setView] = useState('');
+    const [ userType, setUserType ] = useState(''); 
 
     useEffect(() => {
         const fetchUserData = async () => {
-            // Simulate fetching user data
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            setView('profile'); // Set default view after fetching user data
+            if (user && user.uid && !authLoading) {
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                setView('profile'); //loads profile page as default view
+                // fetches user data and sets the userType state for conditional rendering of buttons
+                try {
+                    const userData = await getUserProfile();
+                    if (userData) {
+                        setUserType(userData.accountType);
+                    }
+                    // console.log('userType:', userData.accountType);
+                }
+                catch (error) {
+                    console.error('Error fetching user data:', error);
+                }
+            }
         };
-
         fetchUserData();
-    }, []);
+    }, [user, authLoading]);
+
 
     return (
         <>
@@ -24,20 +43,35 @@ const Dashboard = () => {
                     style={view === 'profile' ? activeButtonStyle : buttonStyle} 
                     onClick={() => setView('profile')}
                 >
-                    Profile
+                    My Profile
                 </button>
+                {userType === 'organization' && (
                 <button 
                     style={view === 'requests' ? activeButtonStyle : buttonStyle} 
                     onClick={() => setView('requests')}
                 >
-                    Requests
+                    Org Requests
                 </button>
+                )}           
+
+                {userType === 'organization' && (
                 <button
                     style={view === 'MakeARequest' ? activeButtonStyle : buttonStyle}
                     onClick={() => setView('MakeARequest')}
                 >
                     Make a request
                 </button>
+                )}
+
+                {userType === 'volunteer' && (
+                <button
+                    style={view === 'MyBids' ? activeButtonStyle : buttonStyle}
+                    onClick={() => setView('MyBids')}
+                >
+                    My Bids
+                </button>
+                )}
+
             </nav>
 
             {view === 'profile' && (
@@ -46,15 +80,21 @@ const Dashboard = () => {
                 </section>
             )}
 
-            {view === 'requests' && (
+            {view === 'requests' && userType ==='organization' && (
                 <section>
-                    <RequestsPage />
+                    <UserRequests />
                 </section>
             )}
 
-            {view === 'MakeARequest' && (
+            {view === 'MakeARequest' && userType === 'organization' && (
                 <section>
                     <RequestForm />
+                </section>
+            )}
+
+            {view === 'MyBids' && userType ==='volunteer' && (
+                <section>
+                    <UserBids />
                 </section>
             )}
         </>
@@ -63,6 +103,7 @@ const Dashboard = () => {
 
 const buttonStyle = {
     cursor: 'pointer',
+    margin: '5px',
 };
 
 const activeButtonStyle = {
