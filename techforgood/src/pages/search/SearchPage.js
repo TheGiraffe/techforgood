@@ -5,6 +5,7 @@ const SearchPage = () => {
 
     return (
         <div>
+            <br />
             <SearchRequests />
         </div>
     )

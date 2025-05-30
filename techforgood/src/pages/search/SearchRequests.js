@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { searchRequests } from '../../features/firebase/search';
-import { Fragment } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { formatDateTime } from '../../features/utils/formatDateTime'
 
 function SearchRequests() {
+    const navigate = useNavigate();
+    const location = useLocation();
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm();
     const [searchInput, setSearchInput] = useState('');
     const [results, setResults] = useState([]);
@@ -12,8 +14,13 @@ function SearchRequests() {
     const [currentPage, setCurrentPage] = useState(1);
     const [submittedQueryArr, setSubmittedQueryArr] = useState([])
     const resultsPerPage = 5;
-    const navigate = useNavigate();
-    const location = useLocation();
+
+    // managing hover state
+    const [hoveredCardIndex, setHoveredCardIndex] = useState(false);
+    const [hoveredKeywordIndex, setHoveredKeywordIndex] = useState(false);
+    const [hoveredLearnMoreIndex, setHoveredLearnMoreIndex] = useState(false);
+    const [hoveredPreviousButton, setHoveredPreviousButton] = useState(false);
+    const [hoveredNextButton, setHoveredNextButton] = useState(false);
 
     const onSubmit = async data => {
         if (!data.searchQuery) {
@@ -41,19 +48,16 @@ function SearchRequests() {
         }
         
     };
-
+    
     useEffect(() => {
-        // Detect if this is a browser refresh
+    
+        //preventing refresh on back
         let isRefresh = false;
         if (performance.getEntriesByType) {
             const nav = performance.getEntriesByType('navigation');
             if (nav.length > 0) isRefresh = nav[0].type === 'reload';
         }
-        if (typeof performance.navigation !== 'undefined') {
-            isRefresh = performance.navigation.type === 1;
-        }
-
-        // Restore state
+        
         if (!isRefresh && location.state?.previousResults) {
             const { previousResults, submittedQueryArr, currentPage, searchInput } = location.state;
             setResults(previousResults);
@@ -99,6 +103,15 @@ function SearchRequests() {
         };
     }, []);
 
+    useEffect(() => {
+        const styleTag = document.createElement('style');
+        styleTag.innerHTML = mobileCardStyle;
+        document.head.appendChild(styleTag);
+        return () => {
+            document.head.removeChild(styleTag);
+        };
+    }, []);
+    
     const handleNextPage = () => {
         setCurrentPage(prevPage => prevPage + 1);
     };
@@ -132,125 +145,242 @@ function SearchRequests() {
                     {results.length === 0 ? (
                         <p>No results found</p>
                     ) : (
-                        <>
-                            <table className="request-table" style={styles.requestTable}>
-                                <thead>
-                                    <tr className="table-header-row" style={styles.tableHeaderRow}>
-                                        <th className="request-table-header" style={styles.requestTableHeader} scope='col'>Title</th>
-                                        <th className="request-table-header" style={styles.requestTableHeader} scope='col'>Description</th>
-                                        <th className="request-table-header" style={styles.requestTableHeader} scope='col'>Keywords</th>
-                                        <th className="request-table-header" style={styles.requestTableHeader} scope='col'>Date Created</th>
-                                        <th className="request-table-header" style={styles.requestTableHeader} scope='col'>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {currentResults.map((result, index) => (
-                                        <tr style={styles.tableRow} key={index}>
-                                            <th>{result.title.split(/\s/).map((word, idx) => {
-                                                if (submittedQueryArr.includes(word.replace(/\W/, "").toLowerCase())){
-                                                    return <Fragment key={idx}><span style={{backgroundColor: "yellow"}}>{word}</span> </Fragment>
-                                                } else {
-                                                    return <Fragment key={idx}>{word} </Fragment>
-                                                }
-                                            })}</th>
-                                            <td>{(result.briefDescription || '').split(/\s/).map((word, idx) => {
-                                                if (submittedQueryArr.includes(word.replace(/\W/, "").toLowerCase())){
-                                                    return <Fragment key={idx}><span style={{backgroundColor: "yellow"}}>{word}</span> </Fragment>
-                                                } else {
-                                                    return <Fragment key={idx}>{word} </Fragment>
-                                                }
-                                            })}</td>
-                                            {result.keywords ? (
-                                                <td>Keywords: {result.keywords.map((words, idx) => {
-                                                    const words_split = words.split(/\s/)
-                                                    const pieces = []
-                                                    for (const word of words_split){
-                                                        if (submittedQueryArr.includes(word.replace(/\W/, "").toLowerCase())){
-                                                            pieces.push(<Fragment key={`kw-${idx}-${word}`}><span style={{backgroundColor: "yellow"}}>{word}</span> </Fragment>)
-                                                        } else {
-                                                            pieces.push(<Fragment key={`kw-${idx}-${word}`}>{word} </Fragment>)
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                            {currentResults.map((result, index) => (
+                                <div 
+                                    key={index} 
+                                    style={{
+                                        ...styles.card,
+                                        backgroundColor: hoveredCardIndex === index ? '#f5f5f5' : '#fff', 
+                                        transform: hoveredCardIndex === index ? 'scale(1.025)' : 'scale(1)',
+                                        zIndex: hoveredCardIndex === index ? 2 : 1,
+                                        boxShadow: hoveredCardIndex === index
+                                            ? '0 4px 16px rgba(0,0,0,0.10)'
+                                            : styles.card.boxShadow,
+                                    }}
+                                    onMouseEnter={() => setHoveredCardIndex(index)}
+                                    onMouseLeave={() => setHoveredCardIndex(null)}
+                                    className="search-card">
+                                    <h3 style={styles.title}>
+                                        {result.title
+                                            ? result.title.charAt(0).toUpperCase() + result.title.slice(1)
+                                            : ''}
+                                    </h3>
+                                    <p style={styles.description}>
+                                        {result.briefDescription
+                                            ? result.briefDescription.charAt(0).toUpperCase() + result.briefDescription.slice(1)
+                                            : <em>No description provided.</em>
+                                        }
+                                    </p>
+                                    <div style={styles.time}>
+                                        <span style={styles.timePosted}>
+                                            {formatDateTime(result.created)}
+                                        </span>
+                                    </div>
+                                    <div style={styles.keywordRow}>
+                                        <div style={styles.keywords}>
+                                            {result.keywords && result.keywords.map((kw, idx) => (
+                                                <span 
+                                                    key={idx}
+                                                    style={{
+                                                        ...styles.keyword,
+                                                        backgroundColor: hoveredKeywordIndex.card === index && hoveredKeywordIndex.idx === idx ? '#e0f7fa' : '#f1f1f1',
+                                                        transform: hoveredKeywordIndex.card === index && hoveredKeywordIndex.idx === idx ? 'scale(1.05)' : 'scale(1)',
+                                                        zIndex: hoveredKeywordIndex.card === index && hoveredKeywordIndex.idx === idx ? 2 : 1,
+                                                    }}
+                                                    onMouseEnter={() => setHoveredKeywordIndex({card: index, idx})}
+                                                    onMouseLeave={() => setHoveredKeywordIndex({card: null, idx: null})}
+                                                >
+                                                    {kw}
+                                                </span>
+                                            ))}
+                                        </div>
+                                        <button
+                                            type="button"
+                                            style={{
+                                                ...styles.learnMoreButton,
+                                                backgroundColor: hoveredLearnMoreIndex === index ? '#04AA6D' : '#0a8d5f',
+                                                cursor: `/search/expanded/${result.id}` ? 'pointer' : 'not-allowed',
+                                            }}
+                                            onMouseEnter={() => setHoveredLearnMoreIndex(index)}
+                                            onMouseLeave={() => setHoveredLearnMoreIndex(null)}
+                                            onClick={() => {
+                                                if (/^[a-zA-Z0-9_-]{20,}$/.test(result.id)) {
+                                                    navigate(`/search/expanded/${result.id}`, {
+                                                        state: {
+                                                            request: result,
+                                                            previousResults: results,
+                                                            submittedQueryArr: submittedQueryArr,
+                                                            currentPage: currentPage,
+                                                            indexOfLastResult: indexOfLastResult,
+                                                            searchInput: getValues('searchQuery'),
                                                         }
-                                                    }  
-                                                    {idx===result.keywords.length - 1 ? pieces.push(<Fragment key={`kw-${idx}`}></Fragment>) : pieces.push(<Fragment key={`kw-${idx}`}>, </Fragment>)}
-                                                    return pieces
-                                                })}</td>
-                                            ) : (
-                                                <></>
-                                            )}
-                                            <td>{new Date(result.created).toLocaleDateString()}</td>
-                                            <td className='actionsStyling' style={styles.actionsStyling}>
-                                                <button 
-                                                    type='button'
-                                                    onClick={() => {
-                                                        // Validate the ID before navigating
-                                                        if (/^[a-zA-Z0-9_-]{20,}$/.test(result.id)) {
-                                                            console.log(`Validated request ID: ${result.id}`);
-                                                            navigate(`/search/expanded/${result.id}`, { 
-                                                                state: { 
-                                                                    request: result,
-                                                                    previousResults: results,
-                                                                    submittedQueryArr: submittedQueryArr,
-                                                                    currentPage: currentPage,
-                                                                    indexOfLastResult: indexOfLastResult,
-                                                                    searchInput: getValues('searchQuery'),
-                                                                }
-                                                            });
-                                                        } else {
-                                                            alert("Invalid request ID.");
-                                                        }
-                                                    }}>
-                                                    Learn More
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                            <div>
-                                <p>Page {currentPage}</p>
-                                {currentPage > 1 && <button onClick={handlePreviousPage}>Previous</button>}
-                                {indexOfLastResult < results.length && <button onClick={handleNextPage}>Next</button>}
-                            </div>
-                        </>
+                                                    });
+                                                }
+                                            }}
+                                        >
+                                            Learn More
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     )}
+                    <br />
+                    <div style={{ marginBottom: '10px', fontWeight: 'bold' }}>
+                        {currentPage} of {Math.ceil(results.length / resultsPerPage)}
+                    </div>
+                    <div>
+                        <button
+                            type="button"
+                            style={{
+                                ...styles.paginationButton,
+                                ...(currentPage === 1 ? styles.paginationButtonDisabled : {}),
+                                    backgroundColor: hoveredPreviousButton ? '#04AA6D': '#0a8d5f',
+                            }}
+                            onMouseEnter={() => setHoveredPreviousButton(true)}
+                            onMouseLeave={() => setHoveredPreviousButton(false)}
+                            onClick={handlePreviousPage}
+                            disabled={currentPage === 1}
+                        >
+                            Previous
+                        </button>
+                        <button
+                            type="button"
+                            style={{
+                                ...styles.paginationButton,
+                                ...(currentPage === Math.ceil(results.length / resultsPerPage) ? styles.paginationButtonDisabled : {}),
+                                backgroundColor: hoveredNextButton ? '#04AA6D': '#0a8d5f',
+                            }}
+                            onMouseEnter={() => setHoveredNextButton(true)}
+                            onMouseLeave={() => setHoveredNextButton(false)}
+                            onClick={handleNextPage}
+                            disabled={currentPage === Math.ceil(results.length / resultsPerPage)}
+                        >
+                            Next
+                        </button>
+                    </div>
                 </div>
             )}
         </div>
     );
 }
 
+
 const styles = {
-    requestTable: {
-        collumns: '10',
-        borderTop: '1px solid black',
-        borderBottom: '1px solid black',
-        margin: '0 auto',
-        width: '60%',
-        borderCollapse: 'collapse',
+    card: {
+      border: '1px solid #ddd',
+      borderRadius: '8px',
+      padding: '20px',
+      position: 'relative',
+      width: '75%', // Adjusted width for better responsiveness
+      margin: '0 auto',
+      maxWidth: '800px',
+      boxSizing: 'border-box',
+      transition: 'background-color 0.3s, transform 0.2s, box-shadow 0.2s',
     },
-    tableHeaderRow: {
-        backgroundColor: '#f2f2f2',
-        borderBottom: '1px solid black',
+    time: {
+      display: 'flex',
+      justifyContent: 'flex-end', // Align content to the right
+      fontSize: '12px',
+      color: '#888',
+      marginBottom: '8px',
     },
-    requestTableHeader: {
-        fontSize: '18px',
-        padding: '10px',
+    timePosted: {
+      fontWeight: 'bold',
     },
-    requestTitleHeader: {
-        textTransform: 'capitalize',
-        padding: '10px',
-        fontWeight: 'bold',
+    iconButton: {
+      background: 'none',
+      border: 'none',
+      cursor: 'pointer',
+      fontSize: '18px',
+      color: '#aaa',
     },
-    tableRow: {
-        
-        
-        
+    title: {
+      margin: '0 0 8px 0',
+      fontSize: '20px',
+      fontWeight: 'bold',
     },
-    actionsStyling: {
-        gap: '5px',
-        padding: '5px',
+    description: {
+      fontSize: '15px',
+      color: '#333',
+      marginBottom: '10px',
+      textAlign: 'left',
     },
-};
+    keywordRow: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'flex-start', // Align to top
+      marginTop: '10px',
+      minHeight: '56px', 
+      gap: '10px',
+    },
+    keywords: {
+      display: 'flex',
+      gap: '8px',
+      flexWrap: 'wrap',
+      flex: 1, // Take up available space
+    },
+    keyword: {
+      borderRadius: '12px',
+      padding: '4px 12px',
+      fontSize: '13px',
+      color: '#555',
+      transition: 'background-color 0.1s, transform 0.1s, box-shadow 0.1s',
+      cursor: 'pointer',
+    },
+    learnMoreButton: {
+      color: '#fff',
+      border: 'none',
+      borderRadius: '5px',
+      padding: '8px 14px',
+      cursor: 'pointer',
+      fontWeight: 'bold',
+      fontSize: '15px',
+      alignSelf: 'flex-start', // keeps button at top of keyword ow
+      minWidth: '120px', // keeps button dimensions consistent
+      minHeight: '40px', 
+      marginLeft: '16px',
+      transition: 'background-color 0.3s ease',
+    },
+    pagination: {
+      marginTop: '20px',
+      display: 'flex',
+      gap: '10px',
+      justifyContent: 'center',
+      borderRadius: '5px',
+    },
+    paginationButton: {
+      color: '#fff',
+      border: 'none',
+      borderRadius: '5px',
+      padding: '8px 14px',
+      cursor: 'pointer',
+      fontWeight: 'bold',
+      fontSize: '15px',
+      minWidth: '120px',
+      minHeight: '40px',
+      margin: '0 5px',
+      transition: 'background-color 0.3s ease',
+    },
+    paginationButtonDisabled: {
+      background: '#ccc',
+      color: '#666',
+      cursor: 'not-allowed',
+    },
+  };
+
+
+const mobileCardStyle = `
+@media (max-width: 600px) {
+  .search-card {
+    width: 100% !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+  }
+}
+`;
+
 
 
 export default SearchRequests;
