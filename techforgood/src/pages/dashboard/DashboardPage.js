@@ -19,6 +19,7 @@ const Dashboard = () => {
     return (
         <>
             <nav>
+                <br />
                 <button 
                     style={view === 'profile' ? activeButtonStyle : buttonStyle} 
                     onClick={() => setView('profile')}
