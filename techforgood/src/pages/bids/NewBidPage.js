@@ -43,6 +43,8 @@ export default function NewBidPage() {
         }
         //user_email@emailing.com
     }
+    // Add button to request contact information to profiles
+    // Person you are requesting has to approve request
 
     return (
         <div className="row">
