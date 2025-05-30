@@ -80,40 +80,32 @@ const SearchRequestExpanded = () => {
                     <br/>If you would like to get more information about this opportunity, or would 
                     like to submit your profile, please click apply.</p>
                     <div style={styles.buttonRowStyle}>
-                        <button
+                        <button type='button'
                             style={{
-                                ...styles.applyBtn,
+                                ...styles.applyButton,
                                 cursor: orgContactEmail ? 'pointer' : 'not-allowed',
                                 backgroundColor: isApplyHovered ? '#04AA6D': '#0a8d5f'
                             }}
                             onMouseEnter={() => setIsApplyHovered(true)}
                             onMouseLeave={() => setIsApplyHovered(false)}
-                            onClick = {() => {if (orgContactEmail) window.location.href = `mailto:${orgContactEmail}`;}}
-                            disabled={!orgContactEmail}
-                        >
-                            Apply
+                            onClick={makeBid}>Apply
                         </button>
                         <button
+                            type='button'
                             style={{
-                                ...styles.backBtn,
+                                ...styles.backButton,
                                 cursor: 'pointer',
                                 backgroundColor: isBackHovered ? '#1976d2' : '#1565c0'
                             }}
                             onMouseEnter={() => setIsBackHovered(true)}
                             onMouseLeave={() => setIsBackHovered(false)}
-                            onClick={loadPreviousSearchRequestsResults}
-                        >
-                            Back to Search Requests
-                        </button>
+                            onClick={loadPreviousSearchRequestsResults}>
+                            Back to Search Results
+                        </button> 
                     </div>
                 </div>
             )}
-            <button type='button' onClick={makeBid}>Apply</button>
-            <button 
-                type='button'
-                onClick={loadPreviousSearchRequestsResults}>
-                Back to Search Requests
-            </button> 
+
         </div>
     );
 }
@@ -148,7 +140,7 @@ const styles = {
         gap: '16px',
         marginTop: '24px',
     },
-    applyBtn:{
+    applyButton:{
         color: '#fff',
         border: 'none',
         borderRadius: '5px',
@@ -157,7 +149,7 @@ const styles = {
         fontSize: '16px',
         transition: 'background 0.3s ease',
     },
-    backBtn: {
+    backButton: {
         color: '#fff',
         border: 'none',
         borderRadius: '5px',
