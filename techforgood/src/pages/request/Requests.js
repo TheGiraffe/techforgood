@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import getRequests from '../../features/firebase/auth/getRequests';
 import deleteRequest from '../../features/firebase/auth/deleteRequest';
 import { useAuth } from '../../features/firebase/AuthProvider';
@@ -6,6 +7,7 @@ import UpdateRequestModal from './UpdateRequestModal'; // Import the modal compo
 
 const UserRequests = () => {
     const { user, loading: authLoading } = useAuth();
+    const navigate = useNavigate();
     const [requests, setRequests] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -49,6 +51,10 @@ const UserRequests = () => {
             setError(error);
         }
     };
+    
+    const viewBids = (requestId) => {
+        navigate(`/bids/request?=${requestId}`);
+    };
 
     const handleEdit = (request) => {
         setSelectedRequest(request);
@@ -78,7 +84,7 @@ const UserRequests = () => {
 
     return (
         <div>
-            <h1>Requests your or your org have made</h1>
+            <h1>Requests you or your organization have made</h1>
             {successMessage && (
                 <p
                     style={{
@@ -91,20 +97,20 @@ const UserRequests = () => {
                     {successMessage}
                 </p>
             )}
-                <table className="request-table" style={styles.requestTable}>
+                <table style={styles.requestTable}>
                     <thead>
-                        <tr className="table-header-row" style={styles.tableHeaderRow}>
-                            <th className="request-table-header" style={styles.requestTableHeader} scope='col'>Title</th>
-                            <th className="request-table-header" style={styles.requestTableHeader} scope='col'>Description</th>
-                            <th className="request-table-header" style={styles.requestTableHeader} scope='col'>Keywords</th>
-                            <th className="request-table-header" style={styles.requestTableHeader} scope='col'>Date Created</th>
-                            <th className="request-table-header" style={styles.requestTableHeader} scope='col'>Actions</th>
+                        <tr style={styles.tableHeaderRow}>
+                            <th  style={styles.requestTableHeader} scope='col'>Title</th>
+                            <th  style={styles.requestTableHeader} scope='col'>Description</th>
+                            <th  style={styles.requestTableHeader} scope='col'>Keywords</th>
+                            <th  style={styles.requestTableHeader} scope='col'>Date Created</th>
+                            <th  style={styles.requestTableHeader} scope='col'>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {currentResults.map((request) => (
                             <tr key={request.id}>
-                                <th scope='row' className='requestTitleHeader' style={styles.requestTitleHeader}>{request.title}</th>
+                                <th scope='row' style={styles.requestTitleHeader}>{request.title}</th>
                                 <td>
                                     {request.description.length > 50 ? (
                                         <span
@@ -119,9 +125,10 @@ const UserRequests = () => {
                                 </td>
                                 <td>{request.keywords ? request.keywords.join(', ') : 'N/A'}</td>
                                 <td>{new Date(request.created).toLocaleDateString()}</td>
-                                <td className='actionsStyling' style={styles.actionsStyling}>
+                                <td style={styles.actionsStyling}>
                                     <button onClick={() => handleEdit(request)}>Edit</button>
                                     <button onClick={() => handleDelete(request.id)}>Delete</button>
+                                    <button onClick={() => viewBids(request.id)}>View Bids</button>
                                 </td>
                             </tr>
                         ))}

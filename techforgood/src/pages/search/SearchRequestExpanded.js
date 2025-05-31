@@ -20,7 +20,7 @@ const SearchRequestExpanded = () => {
     const [isBackHovered, setIsBackHovered] = useState(false);
 
     // State to hold organization contact email and name
-    const [orgContactEmail, setOrgContactEmail] = useState(null);
+    // const [orgContactEmail, setOrgContactEmail] = useState(null);
     const [organizationName, setOrganizationName] = useState(null);
 
     // Fetch the user's email when request is loaded
@@ -28,9 +28,9 @@ const SearchRequestExpanded = () => {
         const fetchOrganizationDetails = async () => {
         if (request && request.uid) {
             getDataById('users', request.uid).then(user => {
-                if (user && user.orgContactEmail) {
-                    setOrgContactEmail(user.orgContactEmail);
-                }
+                // if (user && user.orgContactEmail) {
+                //     setOrgContactEmail(user.orgContactEmail);
+                // }
                 if (user && user.organizationName) {
                     setOrganizationName(user.organizationName);
                 }
@@ -83,7 +83,7 @@ const SearchRequestExpanded = () => {
                         <button type='button'
                             style={{
                                 ...styles.applyButton,
-                                cursor: orgContactEmail ? 'pointer' : 'not-allowed',
+                                cursor: 'pointer',
                                 backgroundColor: isApplyHovered ? '#04AA6D': '#0a8d5f'
                             }}
                             onMouseEnter={() => setIsApplyHovered(true)}
