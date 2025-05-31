@@ -10,7 +10,6 @@ import SearchPage from './pages/search/SearchPage';
 import SearchRequestExpanded from './pages/search/SearchRequestExpanded';
 
 import 'bootstrap/dist/css/bootstrap.css';
-import KSKaiauluLogo from "./assets/KS-Kaiaulu-Horizontal-Logo.png"
 import TechForGoodNavbar from './components/TechForGoodNavbar';
 import { useState, useEffect } from 'react';
 import getUserProfile from './features/firebase/auth/getUserProfile';
@@ -86,7 +85,7 @@ function AppContent() {
           <Route path='/bids/new/' element={<NewBidPage />} />
         </Routes>
       </div>
-      <img src={KSKaiauluLogo} width={"50%"} />
+      <img src="https://github.com/TheGiraffe/techforgood/blob/main/assets/KS-Kaiaulu-Horizontal-Logo.png?raw=true" width={"50%"} />
     </div>
   );
 }
