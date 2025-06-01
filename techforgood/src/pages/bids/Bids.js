@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../features/firebase/AuthProvider';
 import getBids from '../../features/firebase/auth/getBids';
+import { Link, useNavigate } from 'react-router-dom';
 
 const UserBids = () => {
     const { user, loading: authLoading } = useAuth();
     const [bids, setBids] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const navigate = useNavigate();
 
     const [currentPage, setCurrentPage] = useState(1);
     const resultsPerPage = 5;
@@ -58,8 +60,7 @@ const UserBids = () => {
                 <thead>
                     <tr style={styles.tableHeaderRow}>
                         <th  style={styles.bidsTableHeader} scope='col'>Title</th>
-                        <th  style={styles.bidsTableHeader} scope='col'>Description</th>
-                        <th  style={styles.bidsTableHeader} scope='col'>Keywords</th>
+                        <th  style={styles.bidsTableHeader} scope='col'>Request Title</th>
                         <th  style={styles.bidsTableHeader} scope='col'>Date Created</th>
                         <th  style={styles.bidsTableHeader} scope='col'>Actions</th>
                     </tr>
@@ -68,22 +69,10 @@ const UserBids = () => {
                     {currentResults.map((bids) => (
                         <tr key={bids.id}>
                             <th scope='row' style={styles.bidsTitleHeader}>{bids.title}</th>
-                            <td>
-                                {bids.description.length > 50 ? (
-                                    <span
-                                        style={{ cursor: 'pointer', color: 'blue', textDecoration: 'underline' }}
-                                        // onClick={() => ExpandedBidPage(bids)}
-                                    >
-                                        {bids.description.substring(0, 100)}...
-                                    </span>
-                                ) : (
-                                    bids.description
-                                )}
-                            </td>
-                            <td>{bids.keywords ? bids.keywords.join(', ') : 'N/A'}</td>
+                            <td><Link to={{ pathname: `../search/expanded/${bids.requestId}` }}>{bids.requestTitle}</Link></td>
                             <td>{new Date(bids.created).toLocaleDateString()}</td>
                             <td style={styles.actionsStyling}>
-                                
+                                <button onClick={() => {navigate(`/bids/view/${bids.id}`)}}>View</button>
                             </td>
                         </tr>
                     ))}
