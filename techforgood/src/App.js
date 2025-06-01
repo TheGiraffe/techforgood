@@ -9,6 +9,9 @@ import LoginPage from './pages/login/LoginPage';
 import SearchPage from './pages/search/SearchPage';
 import SearchRequestExpanded from './pages/search/SearchRequestExpanded';
 
+import RequestsBids from './pages/request/RequestsBids';
+import RequestsBidsExpanded from './pages/request/RequestsBidsExpanded';
+
 import 'bootstrap/dist/css/bootstrap.css';
 import TechForGoodNavbar from './components/TechForGoodNavbar';
 import { useState, useEffect } from 'react';
@@ -85,6 +88,9 @@ function AppContent() {
           <Route path='/search/expanded/:id' element={<SearchRequestExpanded />} />
           <Route path='/bids/new/' element={<NewBidPage userId={user.uid} userName={`${profile.firstName} ${profile.lastName}` } />} />
           <Route path='/bids/view/:id' element={<BidView />} />
+          {/* for requests routing and bid routing */}
+          <Route path='/requests/:requestId/bids' element={<RequestsBids />} />
+          <Route path='/requests/:requestId/bids/:bidId' element={<RequestsBidsExpanded />} />
         </Routes>
       </div>
       <img src="https://github.com/TheGiraffe/techforgood/blob/main/assets/KS-Kaiaulu-Horizontal-Logo.png?raw=true" width={"50%"} />
