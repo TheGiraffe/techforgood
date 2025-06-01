@@ -15,8 +15,6 @@ const RequestsBidsExpanded = () => {
     const [shortlistMessage, setShortlistMessage] = useState('');
     const [isShortlisted, setIsShortlisted] = useState(false);
     const [isCheckingStatus, setIsCheckingStatus] = useState(true);
-  
-    
 
     // check for bid shortlist status on load
     useEffect(() => {
