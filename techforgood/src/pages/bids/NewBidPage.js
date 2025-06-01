@@ -113,7 +113,7 @@ export default function NewBidPage({userId, userName}) {
                         <div>Links:</div>
                         <textarea onChange={(e) => {setLinks(e.target.value)}} style={{width: "80%", minHeight: "5em"}} placeholder="Add any links and link descriptions here."></textarea>
                     </label>
-                    <label className="my-2">
+                    {/* <label className="my-2">
                         <div>Add Other Team Members:</div>
                         <input type="email" style={{width: "50%"}} 
                             placeholder="email@example.com" 
@@ -125,7 +125,7 @@ export default function NewBidPage({userId, userName}) {
                                 )
                                 
                             }) : <></>}
-                    </label>
+                    </label> */}
                     <label className="my-4">
                         <div>Your Contact Email (Public to Bid Viewers):</div>
                         <input onChange={(e) => {setContactEmail(e.target.value)}} style={{width: "50%"}} type="email" placeholder="example@example.com" />
