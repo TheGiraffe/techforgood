@@ -86,7 +86,7 @@ function AppContent() {
           <Route path='/dashboard' element={<DashboardPage />} />
           <Route path='/search' element={<SearchPage />} />
           <Route path='/search/expanded/:id' element={<SearchRequestExpanded />} />
-          <Route path='/bids/new/' element={<NewBidPage userId={user.uid} userName={`${profile.firstName} ${profile.lastName}` } />} />
+          <Route path='/bids/new/' element={<NewBidPage userId={user?.uid} userName={`${profile?.firstName} ${profile?.lastName}` } />} />
           <Route path='/bids/view/:id' element={<BidView />} />
           {/* for requests routing and bid routing */}
           <Route path='/requests/:requestId/bids' element={<RequestsBids />} />
