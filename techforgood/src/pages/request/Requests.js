@@ -5,6 +5,8 @@ import deleteRequest from '../../features/firebase/auth/deleteRequest';
 import { useAuth } from '../../features/firebase/AuthProvider';
 import UpdateRequestModal from './UpdateRequestModal'; // Import the modal component
 
+import { getBidsByRequestId } from '../../features/firebase/auth/getBids';
+
 const UserRequests = () => {
     const { user, loading: authLoading } = useAuth();
     const navigate = useNavigate();
@@ -18,6 +20,8 @@ const UserRequests = () => {
     const [successMessage, setSuccessMessage] = useState(''); // State for success message
     const [fadeOut, setFadeOut] = useState(false); // State for fade-out effect
 
+    const [bidCounts, setBidCounts] = useState({}); // State to hold bid counts for each request
+
     useEffect(() => {
         const fetchRequests = async () => {
             try {
@@ -26,6 +30,18 @@ const UserRequests = () => {
                     // Sort requests by most recent date to least recent date
                     const sortedData = data.sort((a, b) => new Date(b.created) - new Date(a.created));
                     setRequests(sortedData);
+
+                    const counts = {};
+                    for (const request of sortedData) {
+                        try {
+                            const bids = await getBidsByRequestId(request.id);
+                            counts[request.id] = bids.length;
+                        } catch (error) {
+                            console.error(`Error fetching bids for request ${request.id}:`, error);
+                            counts[request.id] = 0;
+                        }
+                    }
+                    setBidCounts(counts);
                 } else {
                     setError(new Error('Not logged in!'));
                 }
@@ -52,8 +68,13 @@ const UserRequests = () => {
         }
     };
     
-    const viewBids = (requestId) => {
-        navigate(`/bids/request?=${requestId}`);
+    const viewBids = (requestId, requests) => {
+        navigate(`/requests/${requestId}/bids`, {
+            state: {
+                requestData: requests,
+                requestId: requestId,
+            }
+        });
     };
 
     const handleEdit = (request) => {
@@ -104,6 +125,7 @@ const UserRequests = () => {
                             <th  style={styles.requestTableHeader} scope='col'>Description</th>
                             <th  style={styles.requestTableHeader} scope='col'>Keywords</th>
                             <th  style={styles.requestTableHeader} scope='col'>Date Created</th>
+                            <th  style={styles.requestTableHeader} scope='col'>Bids available</th>
                             <th  style={styles.requestTableHeader} scope='col'>Actions</th>
                         </tr>
                     </thead>
@@ -125,10 +147,11 @@ const UserRequests = () => {
                                 </td>
                                 <td>{request.keywords ? request.keywords.join(', ') : 'N/A'}</td>
                                 <td>{new Date(request.created).toLocaleDateString()}</td>
+                                <td>{bidCounts[request.id] || 0}</td>
                                 <td style={styles.actionsStyling}>
                                     <button onClick={() => handleEdit(request)}>Edit</button>
                                     <button onClick={() => handleDelete(request.id)}>Delete</button>
-                                    <button onClick={() => viewBids(request.id)}>View Bids</button>
+                                    <button onClick={() => viewBids(request.id, request)}>Bids</button>
                                 </td>
                             </tr>
                         ))}
@@ -185,7 +208,7 @@ const styles = {
         padding: '10px',
         fontWeight: 'bold',
         textAlign: 'left', // Align text to the left
-        verticalAlign: 'bottom', // Justify content to the left
+        verticalAlign: 'middle', // Justify content to the left
     },
     actionsStyling: {
         gap: '5px',

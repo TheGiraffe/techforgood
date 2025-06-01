@@ -1,9 +1,9 @@
-import { getFirestore, collection, addDoc } from "firebase/firestore";
+import { getFirestore, collection, addDoc, setDoc, doc } from "firebase/firestore";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useAuth } from "../../features/firebase/AuthProvider";
 
-const db = getFirestore();
+const database = getFirestore();
 
 const RequestForm = () => {
     const [requestSubmitted, setRequestSubmitted] = useState(false);
@@ -23,7 +23,8 @@ const RequestForm = () => {
         const keywordsFragments = Array.from(new Set(kw.toLowerCase().split(/\s|[,]/))).filter(item => item !== "");
 
         try {
-            await addDoc(collection(db, "requests"), {
+            
+            const requestDocRef = await addDoc(collection(database, "requests"), {
                 title: values.title,
                 briefDescription: values.briefDescription,
                 description: values.description,
@@ -34,11 +35,18 @@ const RequestForm = () => {
                 _descriptionFragments: descriptionFragments,
                 _keywordsFragments: keywordsFragments
             });
-            setRequestSubmitted(true);
 
-            // Reset the form fields after submission
+            await setDoc(doc(database, "shortlist", requestDocRef.id), {
+                bidIds: []
+            });
+
+            console.log("Request created with ID:", requestDocRef.id);
+            console.log("Shortlist document created with same ID")
+
+            setRequestSubmitted(true);
             reset();
         } catch (err) {
+            console.error("Error creating request and shortlist:", err)
             setError(err);
         }
     };
